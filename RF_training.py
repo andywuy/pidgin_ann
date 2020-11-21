@@ -1,3 +1,6 @@
+### Training of the random forest
+### The code is adapted from the original PIDGINv4 code
+
 #libraries
 import bz2
 import time
@@ -180,63 +183,6 @@ def do_tscv(actives,inactives,ntree):
     bs_ret = ','.join(map(str,["%.3f" %f for f in [np.average(bs), np.median(bs), np.std(bs)]]))
     return bedroc_ret,roc_ret,pr_auc_ret,bs_ret,sizes
 
-def grid_search_model(dic_compounds):
-    
-    def gen_model(x_train, y_train, params_input):
-        sw = compute_sample_weight('balanced',y_train)
-        model = Sequential()
-        model.add(tf.keras.Input(shape=x_train[0].shape))
-        # params_input[0] number of layers
-        # params_input[1] number of hidden units in each layer
-        for i in range(params_input[0]):
-            model.add(Dense(params_input[1],activation='relu'))
-        
-        model.add(Dense(1,activation='sigmoid'))
-        opt = Adam(learning_rate=0.001)
-        early_stopping = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=3)    
-        model.compile(optimizer=opt,loss='binary_crossentropy',
-                      weighted_metrics=[tf.keras.metrics.BinaryAccuracy()])
-        model.fit(x_train,y_train,
-                            sample_weight=sw,batch_size=128,epochs=100,
-              verbose=0,callbacks=[early_stopping])
-        return model  
-
-    params = {'num_layer':[1,3,5],
-              'num_neuron':[10,100,1000],
-              }
-    params_inputs = list(itertools.product(params['num_layer'],
-                            params['num_neuron']))
-    
-    x_train = np.concatenate((dic_compounds['actives_train'],
-                              dic_compounds['inactives_train']))
-    y_train = np.concatenate((np.ones(len(dic_compounds['actives_train'])),
-                              np.zeros(len(dic_compounds['inactives_train'])))) 
-    
-    results = []
-    for i in params_inputs:
-        model = gen_model(x_train, y_train,i)
-        aprobs_dev = model.predict(dic_compounds['actives_dev']).ravel()
-        iprobs_dev = model.predict(dic_compounds['inactives_dev']).ravel()
-        tf.keras.backend.clear_session() #otherwise memory will be used up
-        # dev set performance
-        metrics = calculate_performance(aprobs_dev,iprobs_dev)
-        lst = list(i)+ list(metrics)
-        results.append(lst)
-    
-        
-    columns = ['num_layer','num_neuron']    
-    # copy from calculate performance function
-    str1 = '''roc, prauc, brier, bedroc, pc_i, pc_a, 
-             weighted_accuracy,mcc,
-             actives_precision,actives_recall,actives_f1,
-             inactives_precision,inactives_recall,inactives_f1'''
-    for s in str1.split(','):  
-        columns.append('dev_'+s.strip())
-        
-    df = pd.DataFrame(results,columns=columns)
-    
-    return df
-
 def get_fit_model(matrix,label,sample_weight,ntree):
     clf = RandomForestClassifier(n_jobs=3, n_estimators=ntree, class_weight='balanced',random_state=123)
     clf.fit(matrix,label,sample_weight = sample_weight)
@@ -274,6 +220,7 @@ def calculate_performance(actives_ypredict,inactives_ypredict):
              actives_precision,actives_recall,actives_f1,
              inactives_precision,inactives_recall,inactives_f1,)
     return metrics
+
 def evaluate_conformal_prediction(matrix):
     matrix = pd.DataFrame(matrix)
     # the first column is for inactive compounds class 0
