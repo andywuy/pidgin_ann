@@ -1,4 +1,5 @@
-### Extract the data from the bioactivity dataset
+### Extract the data from the bioactivity dataset and generate the inputs for the training.
+### The code is adapted from the original PIDGINv4 code and it is written in python 2.
 
 #libraries
 import random
@@ -24,8 +25,8 @@ def readzip(inp):
     f1.sort(key=lambda x: x[7], reverse=True)
     return f1
 
-#generate fps for file
 def molfp(smile):
+    """Get the morgan fingerprints and scaffold"""
     m = Chem.MolFromSmiles(smile)
     if m is None:
         return 500  # if smile is broken, return True so that we can use this in later functions
@@ -95,6 +96,7 @@ def do_f(mod_chunk):
         count = count+1
         filename,mids = chunk
         training_data = readzip(dpath + filename)
+        # get the fingerprints, scaffolds and publication ids 
         ecfp4,ecfp6,fcfp4,fcfp6,scafs,pids = molfp_file(training_data)
         # create the dictionary to look at the scaffold id
         scaf_dict = {sc:idx for idx,sc in enumerate(set(scafs))}
@@ -107,6 +109,7 @@ def do_f(mod_chunk):
                 if line[col] == '1': actives.append(idx)
                 if line[col] == '0': inactives.append(idx)
             fps = ecfp4
+            # save the input in npz
             # use fp_name, active compounds, publication id, scaffolds, inactive compounds, model id to train
             np.savez_compressed(off + mid + '.npz',
                                 actives = fps[actives],
@@ -126,8 +129,11 @@ def do_fs(inp):
 if __name__ == "__main__":
     dpath = raw_input('Input directory for the bioactivity dataset (e.g. /no_ortho/bioactivity_dataset/):')
     ipath = raw_input('Input path to the information file (e.g. /no_ortho/classes_in_model_no_ortho.txt):')
+    # The output directory for the model inputs
     off = './model_inputs/'
-    fs = calculateinfs()    
+    # Get the list of 1000 models.
+    fs = calculateinfs() 
+    # Prepare the inputs (stored in .npz) for the training
     do_fs(fs)
-    print 'Everything is done!'
+    print('Everything is done!')
     
