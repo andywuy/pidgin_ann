@@ -1,4 +1,8 @@
-#libraries
+### Train the artificial neural network.
+### The trained model is saved in .h5 files. The training results are saved in the training log.
+### The code is adapted from the original PIDGINv4 code.
+
+# libraries
 import time
 import itertools
 import os
@@ -455,18 +459,13 @@ def conformal_prediction(dic_compounds):
     matrix = np.hstack((prediction,y,probs,pred_labels))
     return matrix,clf
     
-def do_modelling(actives,pids,scafs,inactives,model_name,model_label,dic_constants):
-    dic_compounds,enough_compounds = train_dev_test_split(actives,pids,scafs,inactives,
-                         test_size=0.25,dev_size=0.25,
+def do_modelling(actives, pids, scafs, inactives, model_name, model_label, dic_constants):
+    dic_compounds, enough_compounds = train_dev_test_split(actives, pids, scafs, inactives,
+                         test_size=0.25, dev_size=0.25,
                          min_size=10,
                          random_seed=dic_constants['random_seed']) 
         
-    if enough_compounds:
-        # for the parameters search
-        #paramDf = grid_search_model(dic_compounds)
-        # write out parameter search results
-        #paramDf.to_csv(dic_constants['dir_model_para']+model_name+'parameter_search_results.txt',sep='\t',index=False)
-        
+    if enough_compounds:        
         # conformal prediction. Use cal as train set
         start_time = time.time()
         pred_results, model = conformal_prediction(dic_compounds)
@@ -485,7 +484,6 @@ def do_modelling(actives,pids,scafs,inactives,model_name,model_label,dic_constan
                                 mlabel,model_name,
                                 dic_constants['dir_model_results'])
 
-
         # train set performance
         results_train = calculate_performance(aprobs_train,iprobs_train)
         # test set performance
@@ -500,28 +498,28 @@ def do_modelling(actives,pids,scafs,inactives,model_name,model_label,dic_constan
                             dic_compounds['inactives_dev']))
         
         ##LEAVE 50% OF PUBS OUT
-        results_pss =do_group_splitting(actives_train,
+        results_pss = do_group_splitting(actives_train,
                                         np.concatenate([dic_compounds['pids_train'],dic_compounds['pids_dev']]),
                                         inactives_train,
                                         dic_constants,
                                         weights)
         ##LEAVE 50% OF SCAFFOLDS OUT
-        results_sss =do_group_splitting(actives_train,
+        results_sss = do_group_splitting(actives_train,
                                         np.concatenate([dic_compounds['scafs_train'],dic_compounds['scafs_dev']]),
                                         inactives_train,
                                         dic_constants,
                                         weights)
         ###------TSCV------###
         results_tscv = do_tscv(actives_train,inactives_train,weights)
-        ret= [model_name,'ECFP_4',len(set(scafs)),len(set(pids)),
+        ret= [model_name, 'ECFP_4', len(set(scafs)), len(set(pids)),
               round(elapsed_time,2)]
-        lst = [results_test,results_train,results_pss,
-                   results_sss,results_tscv,results_conf]
+        lst = [results_test, results_train, results_pss,
+                   results_sss, results_tscv, results_conf]
         for l in lst:
             ret.extend(l)
 
     else:
-        ret = [model_name,'ECFP_4',len(set(scafs)),len(set(pids))]
+        ret = [model_name, 'ECFP_4', len(set(scafs)), len(set(pids))]
 
     return ret
 
@@ -533,8 +531,8 @@ def get_models_list(path,start,end):
     the mids_list contains the unique model number and the model name
     '''
     mids_list=[]
-    with open( path+"mids_list.txt", "r") as f:
-        for count,line in enumerate(f):
+    with open(path + "mids_list.txt", "r") as f:
+        for count, line in enumerate(f):
             mids_list.append((count,line.strip()))
         f.close()  
     
@@ -631,15 +629,15 @@ if __name__ == "__main__":
                                 dic_constants['end_id'])
     logs = [] #training log--containing measuring metrics for each model
     count = 0
-    for mlabel,mid in mids_list:
-        count = count+1
-        path = dic_constants['dir_model_inputs'] +mid+'.npz'
+    for mlabel, mid in mids_list:
+        count = count + 1
+        path = dic_constants['dir_model_inputs'] + mid + '.npz'
         mid_data = np.load(path)
-        print(mid+' modelling has started')
-        actives,inactives,pids,scafs = mid_data['actives'],mid_data['inactives'],mid_data['pids'],mid_data['scafs']
-        log= do_modelling(actives,pids,scafs,inactives,mid,mlabel,dic_constants)
+        print(mid + ' modelling has started')
+        actives, inactives, pids, scafs = mid_data['actives'], mid_data['inactives'], mid_data['pids'], mid_data['scafs']
+        log = do_modelling(actives, pids, scafs, inactives, mid, mlabel, dic_constants)
         logs.append(log)
-        print('%d models have finished, %d models in total' % (count,len(mids_list)))
+        print('%d models have finished, %d models in total' % (count, len(mids_list)))
         
     write_training_log(logs,dic_constants['dir_training_log'])
     print('Everything is done!')
