@@ -1,4 +1,5 @@
 This is an ANN implementation on PIDGIN (reference: https://github.com/BenderGroup/PIDGINv4)
+The list of 1000 models used in the training can be found in mids_list.txt
 
 *INSTRUCTIONS:*
 - Install PIDGIN environment (python2). (see https://pidginv4.readthedocs.io/en/latest/)
