@@ -10,7 +10,7 @@ The `src/` directory contains the source codes.
 The `no_ortho/` directory contains the bioactivity dataset for each protein target. 
 The datasets are named as `[uniprot_id].smi.zip`.
 For each protein target, we have information about a list of compounds.
-The compound information includes smile, activity label at four IC50 cut-offs (100μM, 10μM, 1μM and 0.1μM) and so on.
+The compound information includes smile, activity labels at four IC50 cut-offs (100μM, 10μM, 1μM and 0.1μM) and so on.
 The activity label is 1 if the compound's IC50 value for this protein target is below the threshold, and it is 0 if otherwise.
 The datasets are generated without mapping to orthologues. 
 Overall, there are 3698 protein targets (datasets).
@@ -25,7 +25,7 @@ The `Project_report.pdf` is a summary report on the implementation and performan
 - Download the codes and the datasets to the current directory: `git clone https://github.com/andywuy/PIDGIN_with_ANN.git`.
 - Create virtual environment: `conda env create -f pidgin_ann_env.yml --name pidgin_ann_env`. 
 - Run `conda activate pidgin_ann_env` to activate the environment. 
-- Run `python -m pip install -e .` to install it in development mode.
+- Run `python -m pip install -e .` to install the `pidgin_ann` package in development mode.
 
 ## Usage
 `>>> import pidgin_ann`
@@ -43,12 +43,5 @@ To train the models:
 
 `>>> m2.train()`
 
-## Installation and Usage
-- Navigate the directory you wish to install `PIDGIN_with_ANN` in the Linux terminal, then run `git clone https://github.com/andywuy/PIDGIN_with_ANN.git`.
-- In the following steps, we work in the root directory `PIDGIN_with_ANN/`.
-- Open terminal in Linux and run `conda env create -f pidgin_ann_env.yml --name pidgin_ann_env`. 
-- Run `conda activate pidgin_ann_env` to activate the environment. 
-- Run `python3 ./scripts/get_model_input.py` to extract data from the bioactivity datasets and generate inputs for the machine learning model training.  The inputs will be saved in `PIDGIN_with_ANN/model_inputs/`. The prompt will ask you to specify the number of model inputs. To train 1000 models, enter 1000.
-- Run `python3 ./scripts/ann_training.py`. The prompt will ask you to specify the how many models you want to train. This number must be less or equal to the number of model inputs.
-- The outputs will be written to `PIDGIN_with_ANN/training_outputs/`. It includes the trained models and `training_log.txt` which includes performance metrics.
+The training metrics are stored in `training_outputs/training_log.txt`.
 

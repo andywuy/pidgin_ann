@@ -125,7 +125,7 @@ class Model(object):
             # [Uniprot, Organism, Compound_ID, Smiles, Measurement,
             # Confidence_Score, Activity_Units,
             # Assay_ID, Orthologue_Flag, 100_Flag, 10_Flag, 1_Flag, 0.1_Flag]
-            training_data = readzip(self.datasets + filename)
+            training_data = readzip(os.path.join(self.datasets, filename))
 
             # get the fingerprints, scaffolds and publication ids
             ecfp4, scafs, pids = molfp_file(training_data)
