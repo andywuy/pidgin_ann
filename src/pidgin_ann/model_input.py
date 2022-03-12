@@ -1,6 +1,5 @@
 import random
 import os
-import sys
 import shutil
 import zipfile
 import numpy as np

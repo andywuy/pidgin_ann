@@ -1,4 +1,10 @@
 from shutil import rmtree
+import time
+import os
+import math
+import warnings
+from dataclasses import dataclass, asdict
+
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Dense, BatchNormalization
 from tensorflow.keras import Sequential
@@ -15,14 +21,8 @@ from sklearn.model_selection import TimeSeriesSplit, GroupShuffleSplit, ShuffleS
 from sklearn.metrics import confusion_matrix, brier_score_loss, accuracy_score, matthews_corrcoef, roc_auc_score
 from sklearn.metrics import average_precision_score  # for the prauc score
 
-import time
-import os
-import sys
 import numpy as np
-import math
 import pandas as pd
-import warnings
-from dataclasses import dataclass, asdict
 warnings.filterwarnings("ignore")
 tf.get_logger().setLevel('ERROR')  # suppress warning from tf
 

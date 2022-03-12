@@ -23,8 +23,9 @@ The `Project_report.pdf` is a summary report on the implementation and performan
 
 ## Installation
 - Download the codes and the datasets to the current directory: `git clone https://github.com/andywuy/PIDGIN_with_ANN.git`.
-- Create virtual environment: `conda env create -f pidgin_ann_env.yml --name pidgin_ann_env`. 
+- Create virtual environment: `conda create -n pidgin_ann_env python=3`. 
 - Run `conda activate pidgin_ann_env` to activate the environment. 
+- Install dependencies: `conda install numpy tensorflow=2 scikit-learn pandas` and `pip install rdkit-pypi nonconformist`.
 - Run `python -m pip install -e .` to install the `pidgin_ann` package in development mode.
 
 ## Usage
