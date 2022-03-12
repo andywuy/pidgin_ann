@@ -80,6 +80,7 @@ def molfp_file(query):
 class Model(object):
     '''
     Create the model inputs.
+    One model input is generated for each protein target at a given IC50 cut-off.
     '''
 
     def __init__(self, dir_datasets: str, path_info: str,
