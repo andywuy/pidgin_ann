@@ -149,7 +149,7 @@ class Model(object):
                         inactives.append(idx)
 
                 # save the training input for each model_id
-                np.savez_compressed(self.outputs + mid + '.npz',  # file name
+                np.savez_compressed(os.path.join(self.outputs, mid + '.npz'),  # file name
                                     # active compounds fingerprints
                                     actives=ecfp4[actives],
                                     # inactive compounds fingerprints
