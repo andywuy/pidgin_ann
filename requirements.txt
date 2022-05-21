@@ -1,0 +1,7 @@
+tensorflow>=2.0
+scikit-learn
+pandas
+numpy
+rdkit-pypi
+nonconformist
+
